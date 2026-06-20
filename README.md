@@ -11,7 +11,7 @@ Use this option if you just want to convert a file without installing Python or 
 3. Open the extracted folder and double-click `XER-to-CSV-Converter.exe`.
 4. In the window, click "Add files" to select your XER file or files. Click "Browse" to choose where the CSV files should be saved. Then click "Convert".
 
-When the conversion finishes, you will find one folder per XER file. Inside each folder there is one CSV file for every table in that XER file.
+When the conversion finishes, you will find one folder per XER file. Inside each folder there is one CSV file for every table in that XER file. By default, the app also creates one master Excel file (`.xlsx`) in the same folder, with every table on its own tab. You can turn the master Excel file off with the checkbox if you only want the CSV files.
 
 ### Why the app is shared as a ZIP file
 
@@ -41,6 +41,12 @@ By default, each CSV includes a leading row-number column. Pass `include_index=F
 
 ```python
 converter.convert_to_csv("output_folder", include_index=False)
+```
+
+To create one Excel workbook that holds every table on its own sheet, use `convert_to_excel`:
+
+```python
+converter.convert_to_excel("output_folder", "schedule.xlsx", include_index=False)
 ```
 
 ## Run the Desktop App From Source

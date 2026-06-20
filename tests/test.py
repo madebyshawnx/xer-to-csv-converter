@@ -22,3 +22,6 @@ for f in entries:
             os.makedirs(output_subdir)
         converter.convert_to_csv(output_subdir)
 
+        # Also write one master Excel file with every table on its own sheet.
+        converter.convert_to_excel(output_subdir, f.split('.')[0] + '.xlsx')
+

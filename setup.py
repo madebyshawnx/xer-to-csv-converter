@@ -9,7 +9,7 @@ README = (HERE / 'README.md').read_text()
 
 setup_args = dict(
     name='xer2csv',
-    version='1.0.5',
+    version='1.1.0',
     description='A simple XER to CSV converter',
     long_description_content_type='text/markdown',
     long_description=README,
@@ -25,7 +25,7 @@ setup_args = dict(
     keywords=['csv', 'xer', 'converter'],
     url='https://github.com/constantintcacenco/xer-to-csv-converter',
     download_url='https://github.com/constantintcacenco/xer-to-csv-converter',
-    install_requires=['pandas']
+    install_requires=['pandas', 'openpyxl']
 )
 
 if __name__ == '__main__':

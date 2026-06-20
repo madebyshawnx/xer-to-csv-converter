@@ -33,6 +33,7 @@ class ConverterApp:
         self.xer_files = []          # list of full paths to .xer files
         self.output_dir = tk.StringVar()
         self.clean_csv = tk.BooleanVar(value=True)  # drop the extra row-number column
+        self.make_excel = tk.BooleanVar(value=True)  # also build one master .xlsx
         self.log_queue = queue.Queue()
         self.is_running = False
 
@@ -103,6 +104,12 @@ class ConverterApp:
             out_frame,
             text="Clean output (leave off the extra row-number column)",
             variable=self.clean_csv,
+        ).pack(anchor="w", padx=8, pady=(0, 0))
+
+        ttk.Checkbutton(
+            out_frame,
+            text="Also create one master Excel file (.xlsx) with every table on its own tab",
+            variable=self.make_excel,
         ).pack(anchor="w", padx=8, pady=(0, 8))
 
         # --- Convert button + progress ---
@@ -202,12 +209,12 @@ class ConverterApp:
         # Run the work off the UI thread so the window stays responsive.
         worker = threading.Thread(
             target=self._convert_worker,
-            args=(list(self.xer_files), out, self.clean_csv.get()),
+            args=(list(self.xer_files), out, self.clean_csv.get(), self.make_excel.get()),
             daemon=True,
         )
         worker.start()
 
-    def _convert_worker(self, files, output_root, clean):
+    def _convert_worker(self, files, output_root, clean, make_excel):
         succeeded, failed = 0, 0
         for path in files:
             name = os.path.basename(path)
@@ -222,6 +229,14 @@ class ConverterApp:
 
                 table_count = len(converter.tables)
                 self.log(f"Saved {table_count} CSV file(s) to {subdir}.")
+
+                if make_excel:
+                    excel_name = stem + ".xlsx"
+                    converter.convert_to_excel(
+                        subdir, excel_name, include_index=not clean
+                    )
+                    self.log(f"Saved master Excel file {excel_name}.")
+
                 succeeded += 1
             except Exception as exc:  # Keep going even if one file is malformed.
                 failed += 1
@@ -285,7 +300,43 @@ class ConverterApp:
             pass
 
 
+def _selftest():
+    """Run a headless CSV + Excel conversion and write the result to a file.
+
+    Used to verify a packaged build (where there is no console) actually works,
+    including the optional Excel output. Result is written to
+    %TEMP%/xer2csv_selftest.txt as 'OK' or 'FAIL: <reason>'.
+    """
+    import tempfile
+
+    out_file = os.path.join(tempfile.gettempdir(), "xer2csv_selftest.txt")
+    try:
+        work = tempfile.mkdtemp()
+        sample = "ERMHDR\t1\n%T\tTASK\n%F\ta\tb\n%R\t1\tx\n%R\t2\ty\n%E\n"
+        xer_path = os.path.join(work, "sample.xer")
+        with open(xer_path, "w", encoding="utf8") as fh:
+            fh.write(sample)
+
+        converter = XerToCsvConverter()
+        converter.read_xer(xer_path)
+        converter.convert_to_csv(work, include_index=False)
+        xlsx_path = converter.convert_to_excel(work, "sample.xlsx", include_index=False)
+
+        csv_ok = os.path.exists(os.path.join(work, "TASK.csv"))
+        xlsx_ok = os.path.exists(xlsx_path)
+        result = "OK" if (csv_ok and xlsx_ok) else f"FAIL: csv={csv_ok} xlsx={xlsx_ok}"
+    except Exception as exc:
+        result = f"FAIL: {exc}"
+
+    with open(out_file, "w", encoding="utf8") as fh:
+        fh.write(result)
+    return 0 if result == "OK" else 1
+
+
 def main():
+    if "--selftest" in sys.argv:
+        sys.exit(_selftest())
+
     root = tk.Tk()
     try:
         # Slightly nicer native look where available.
