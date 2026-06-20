@@ -26,10 +26,16 @@ class XerToCsvConverter:
 
     def convert_to_csv(self, output_path, include_index=True):
         for table in self.tables:
+            # Skip empty or malformed chunks that have no field definition.
+            if '%F' not in table:
+                continue
+
             table_name = table.split()[0]
-            fields = table.split(r'%F')[1].split('\n')[0].split()
+            fields = table.split('%F')[1].split('\n')[0].split()
             rows = table.split('%R')[1:]
-            rows_list = [r.strip().split('\t') for r in rows]
+            # Keep only the first line of each row so the trailing end-of-file
+            # marker ('%E') and any later content do not leak into the last cell.
+            rows_list = [r.split('\n')[0].strip().split('\t') for r in rows]
 
             checked_rows_list = self.check_missing_values(fields, rows_list)
 

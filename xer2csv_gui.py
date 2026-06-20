@@ -11,7 +11,6 @@ import os
 import sys
 import queue
 import threading
-import traceback
 
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
@@ -198,7 +197,7 @@ class ConverterApp:
         self.convert_btn.config(state="disabled")
         self.progress.config(maximum=len(self.xer_files), value=0)
         self.log("")
-        self.log("=== Starting conversion ===")
+        self.log("Starting conversion.")
 
         # Run the work off the UI thread so the window stays responsive.
         worker = threading.Thread(
@@ -213,7 +212,7 @@ class ConverterApp:
         for path in files:
             name = os.path.basename(path)
             try:
-                self.log(f"Converting {name} ...")
+                self.log(f"Converting {name}.")
                 converter = XerToCsvConverter()
                 converter.read_xer(path)
 
@@ -222,17 +221,16 @@ class ConverterApp:
                 converter.convert_to_csv(subdir, include_index=not clean)
 
                 table_count = len(converter.tables)
-                self.log(f"   -> {table_count} table(s) written to {subdir}")
+                self.log(f"Saved {table_count} CSV file(s) to {subdir}.")
                 succeeded += 1
-            except Exception as exc:  # keep going even if one file is malformed
+            except Exception as exc:  # Keep going even if one file is malformed.
                 failed += 1
-                self.log(f"   !! Failed: {exc}")
-                self.log(traceback.format_exc())
+                self.log(f"Could not convert {name}. Reason: {exc}")
             finally:
                 self.log_queue.put(("progress", 1))
 
-        self.log("=== Done ===")
-        self.log(f"Succeeded: {succeeded}   Failed: {failed}")
+        self.log("Conversion finished.")
+        self.log(f"{succeeded} file(s) converted, {failed} failed.")
         self.log_queue.put(("finished", (succeeded, failed, output_root)))
 
     # --------------------------------------------------------- thread-safe log
@@ -278,7 +276,7 @@ class ConverterApp:
     def _open_folder(path):
         try:
             if sys.platform.startswith("win"):
-                os.startfile(path)  # noqa: chmod-free on Windows
+                os.startfile(path)
             elif sys.platform == "darwin":
                 os.system(f'open "{path}"')
             else:

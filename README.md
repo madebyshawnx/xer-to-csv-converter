@@ -1,35 +1,65 @@
 # xer2csv
-This package provides tools to convert XER files to CSV files.
+
+xer2csv converts Primavera P6 XER files into CSV files. Each table inside an XER file is saved as its own CSV file.
 
 ## Desktop App (no command line needed)
-Just want to convert a file without installing Python or touching a terminal?
 
-1. Download **[release/XER-to-CSV-Converter.exe](release/XER-to-CSV-Converter.exe)** (Windows).
-   On the file page, click the **Download** button (or the download icon).
-2. Double-click the downloaded `XER-to-CSV-Converter.exe`.
-   - Windows may show a "Windows protected your PC" warning the first time
-     (because the app isn't code-signed). Click **More info -> Run anyway**.
-3. In the window: click **Add files...** to pick your `.xer` file(s), click
-   **Browse...** to choose where the CSVs should be saved, then click **Convert**.
+Use this option if you just want to convert a file without installing Python or using a terminal.
 
-For each XER file, a subfolder is created containing one CSV per table.
+1. Go to [release/XER-to-CSV-Converter.exe](release/XER-to-CSV-Converter.exe) and click the download button. This app runs on Windows.
+2. Double-click the file you downloaded.
+3. In the window, click "Add files" to select your XER file or files. Click "Browse" to choose where the CSV files should be saved. Then click "Convert".
 
-> The `.exe` is a standalone Windows build — it bundles Python and pandas, so the
-> end user needs nothing installed. It runs on Windows only; Mac/Linux users can
-> run the app from source (`python xer2csv_gui.py`).
+When the conversion finishes, you will find one folder per XER file. Inside each folder there is one CSV file for every table in that XER file.
 
-## Installation
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install [xer2csv](https://pypi.org/project/xer2csv/).
+### About the Windows download warning
+
+The first time you download or open the app, Windows may show a warning from Microsoft Defender SmartScreen that says the file is not commonly downloaded. This is expected. It happens because the app is new and is not signed with a paid code-signing certificate. It does not mean the file is unsafe.
+
+To download the file, click the three dots or the down arrow next to the warning and choose "Keep". To open the file, double-click it, then click "More info" followed by "Run anyway". The warning normally stops appearing once the file has been downloaded by enough people over time.
+
+## Install From Source (Python users)
+
+Install the package with [pip](https://pip.pypa.io/en/stable/):
+
 ```
 pip install xer2csv
 ```
 
-## Testing
-test.py file will parse all the ".xer" files from the `input_dir` location and will parse them to the `output_dir` directory. For each table from XER file a separate CSV file will be created (within a subdirectory with the name of the original XER file).
-usage: 
-```
-python test.py input_dir output_dir
+You can then use the converter in your own Python code:
+
+```python
+from xer2csv import XerToCsvConverter
+
+converter = XerToCsvConverter()
+converter.read_xer("schedule.xer")
+converter.convert_to_csv("output_folder")
 ```
 
+By default, each CSV includes a leading row-number column. Pass `include_index=False` to leave it out:
+
+```python
+converter.convert_to_csv("output_folder", include_index=False)
+```
+
+## Run the Desktop App From Source
+
+If you have Python installed, you can run the app directly without the executable. This also lets Mac and Linux users run it.
+
+```
+python xer2csv_gui.py
+```
+
+## Run the Batch Script
+
+The `tests/test.py` script converts every XER file in an input folder. Run it from the project root so Python can find the package:
+
+```
+python tests/test.py input_folder output_folder
+```
+
+For each XER file, the script creates a subfolder named after the file and writes one CSV per table into it.
+
 ## License
+
 [MIT](https://choosealicense.com/licenses/mit/)
