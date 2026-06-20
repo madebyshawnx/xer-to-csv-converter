@@ -2,6 +2,8 @@
 
 xer2csv converts Primavera P6 XER files into CSV files. Each table inside an XER file is saved as its own CSV file.
 
+The converter is built to copy your data over exactly. It reads the encodings that Primavera uses, so special characters such as currency symbols and accented names are kept rather than dropped. It also keeps text values that span more than one line, and it removes the file's internal markers so they never end up in your data.
+
 ## Desktop App (no command line needed)
 
 Use this option if you just want to convert a file without installing Python or using a terminal. This app runs on Windows.
