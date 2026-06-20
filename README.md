@@ -4,19 +4,20 @@ xer2csv converts Primavera P6 XER files into CSV files. Each table inside an XER
 
 ## Desktop App (no command line needed)
 
-Use this option if you just want to convert a file without installing Python or using a terminal.
+Use this option if you just want to convert a file without installing Python or using a terminal. This app runs on Windows.
 
-1. Go to [release/XER-to-CSV-Converter.exe](release/XER-to-CSV-Converter.exe) and click the download button. This app runs on Windows.
-2. Double-click the file you downloaded.
-3. In the window, click "Add files" to select your XER file or files. Click "Browse" to choose where the CSV files should be saved. Then click "Convert".
+1. Go to [release/XER-to-CSV-Converter.zip](release/XER-to-CSV-Converter.zip) and click the download button.
+2. Find the downloaded ZIP file, right-click it, and choose "Extract All".
+3. Open the extracted folder and double-click `XER-to-CSV-Converter.exe`.
+4. In the window, click "Add files" to select your XER file or files. Click "Browse" to choose where the CSV files should be saved. Then click "Convert".
 
 When the conversion finishes, you will find one folder per XER file. Inside each folder there is one CSV file for every table in that XER file.
 
-### About the Windows download warning
+### Why the app is shared as a ZIP file
 
-The first time you download or open the app, Windows may show a warning from Microsoft Defender SmartScreen that says the file is not commonly downloaded. This is expected. It happens because the app is new and is not signed with a paid code-signing certificate. It does not mean the file is unsafe.
+Web browsers and Microsoft Defender often block a program file (`.exe`) that is downloaded directly, because the file is new and is not signed with a paid certificate. Putting the program inside a ZIP file lets the download complete normally. The file is safe. It is simply too new for Windows to recognize yet.
 
-To download the file, click the three dots or the down arrow next to the warning and choose "Keep". To open the file, double-click it, then click "More info" followed by "Run anyway". The warning normally stops appearing once the file has been downloaded by enough people over time.
+The first time you run the program, Windows may still show a screen that says "Windows protected your PC". This is expected for a new app. Click "More info" and then "Run anyway" to start it. This prompt usually stops appearing after the app has been used for a while.
 
 ## Install From Source (Python users)
 
