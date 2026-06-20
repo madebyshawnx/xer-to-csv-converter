@@ -24,7 +24,7 @@ class XerToCsvConverter:
                 row[len(columns):len(row)] = [None]*(len(columns) - len(row))
         return rows_list
 
-    def convert_to_csv(self, output_path):
+    def convert_to_csv(self, output_path, include_index=True):
         for table in self.tables:
             table_name = table.split()[0]
             fields = table.split(r'%F')[1].split('\n')[0].split()
@@ -36,4 +36,4 @@ class XerToCsvConverter:
             df = pd.DataFrame(checked_rows_list, columns=fields, index=None)
             self.check_output_dir(output_path)
             csv_file_path = os.path.join(output_path, table_name + '.csv')
-            df.to_csv(csv_file_path)
+            df.to_csv(csv_file_path, index=include_index)
